@@ -209,6 +209,14 @@ Contributions are welcome.
 4. Run the tests.
 5. Open a pull request describing your changes.
 
+## Live Demo
+
+https://mozambique-public-holidays-api.vercel.app/
+
+## API Endpoint
+
+https://mozambique-public-holidays-api.vercel.app/api/holidays?year=2027
+
 ## License
 
 Licensed under the MIT License. See the LICENSE file.

@@ -189,7 +189,7 @@ export default function ApiPlayground() {
 
           <span className="flex items-center gap-2 text-xs text-slate-400">
             <span className="h-2 w-2 rounded-full bg-emerald-400" />
-            Local API
+            Live API
           </span>
         </div>
 
