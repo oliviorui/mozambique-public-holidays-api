@@ -1,40 +1,68 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-  getNextHoliday,
   getTodayInMozambique,
-  isValidDate,
+  getHolidaysByYear,
+  getHolidaysByMonth,
+  isValidYear,
+  MIN_YEAR,
+  MAX_YEAR,
 } from "@/lib/holidays";
 
 export function GET(request: NextRequest) {
-  const fromDate =
-    request.nextUrl.searchParams.get("date") ??
-    getTodayInMozambique();
+  const params = request.nextUrl.searchParams;
 
-  if (!isValidDate(fromDate)) {
+  const yearParam = params.get("year");
+  const monthParam = params.get("month");
+
+  const year = yearParam === null
+    ? Number(getTodayInMozambique().slice(0, 4))
+    : Number(yearParam);
+
+  if (
+    yearParam === "" ||
+    !isValidYear(year)
+  ) {
     return NextResponse.json(
       {
         success: false,
-        error: "Invalid date. Use YYYY-MM-DD.",
+        error: `Year must be between ${MIN_YEAR} and ${MAX_YEAR}.`,
       },
       { status: 400 }
     );
   }
 
-  const holiday = getNextHoliday(fromDate);
+  let month: number | null = null;
 
-  if (!holiday) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: "No next holiday available in the supported range.",
-      },
-      { status: 404 }
-    );
+  if (monthParam !== null) {
+    month = Number(monthParam);
+
+    if (
+      monthParam.trim() === "" ||
+      !Number.isInteger(month) ||
+      month < 1 ||
+      month > 12
+    ) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Month must be between 1 and 12.",
+        },
+        { status: 400 }
+      );
+    }
   }
+
+  const holidays = month === null
+    ? getHolidaysByYear(year)
+    : getHolidaysByMonth(year, month);
 
   return NextResponse.json({
     success: true,
-    fromDate,
-    holiday,
+    country: "Mozambique",
+    countryCode: "MZ",
+    year,
+    ...(month !== null && { month }),
+    total: holidays.length,
+    holidays,
   });
 }
